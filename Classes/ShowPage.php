@@ -34,6 +34,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class detects which page version (either by cookie or by random) and sets the page ID accordingly. 
+ * Random means original ID or "B" version ID.
  *
  * @package IllusionFACTORY\ABTestPages
  * @author IllusionFACTORY <info@illusion-factory.de>
@@ -57,6 +58,7 @@ class ShowPage {
 
 	/**
 	 * This function detects which page version (either by cookie or by random) and sets the page ID accordingly. 
+	 * Random means original ID or "B" version ID.
 	 * This function is called from \TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController::checkAlternativeIdMethods()
 	 *
 	 * @param array $params
@@ -65,7 +67,7 @@ class ShowPage {
 	public function SelectId(array $params) {
 		$this->currentPageId = $params['pObj']->id;
 		
-		// If the ID is NULL, then we set this value to 1. NULL is the "Home"page, ID is a spevfic sub-page, e.g. www.domain.de (NULL) - www.domain.de/page.html (ID)
+		// If the ID is NULL, then we set this value to 1. NULL is the "Home"page, ID is a specific sub-page, e.g. www.domain.de (NULL) - www.domain.de/page.html (ID)
 		if(!$this->currentPageId) {
 			$this->currentPageId = 1;
 		}
