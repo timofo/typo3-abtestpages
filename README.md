@@ -11,3 +11,21 @@ This extension depends on realurl.
 
 #### Screenshot:
 ![abtestpages screenshot](https://www.illusion-factory.de/fileadmin/user_upload/abtestpages-images/abtestpages-screen.jpeg)
+
+#### Example for Google Analytics:
+
+In Google Analytics you can different your A and B site with 2 segments.
+
+First you have to add a "Custom Definition" under your property settings.
+Create a "Custom Dimension" with name "Variant A or B" for example. Set "Scope" to "Hit".
+Then create a new advanced segment for your data and give it a segment name. Under advanced conditions add 2 filters.
+1. filter: "Page" - "exactly matches" - "/mysite.html"
+2. filter: "Custom Dimensions" (choose your previously created dimension "Variant A or B") - "contains" - "Variant B"
+
+##### Additional Header Information:
+```javascript
+<script>
+ga('send', 'pageview', { 'dimension1':  'Variant B' });
+</script>
+```
+(dimension1 is the index of your dimension)
