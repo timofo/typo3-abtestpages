@@ -8,3 +8,6 @@ Additional header information may be specified both for the original version as 
 
 #### Info:
 This extension depends on realurl.
+
+#### Screenshot:
+![abtestpages screenshot](https://www.illusion-factory.de/fileadmin/user_upload/abtestpages-images/abtestpages-screen.jpeg)
