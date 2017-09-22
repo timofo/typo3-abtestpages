@@ -24,12 +24,12 @@ $EM_CONF[$_EXTKEY] = [
     'version' => '1.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '8.7.0-8.7.99',
-            'realurl' => '2.2.0-0.0.0'
+            'typo3' => '7.6.0-8.7.99',
+            'realurl' => '2.0.0-0.0.0'
         ],
         'conflicts' => [],
         'suggests' => [],
     ],
-    'comment' => 'First upload',
+    'comment' => '',
     'user' => 'timof'
 ];
