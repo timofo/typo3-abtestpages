@@ -45,6 +45,9 @@ class ShowPage {
 	protected $currentPageId = null;
 
 	/** @var int|null */
+	protected $rootpage_id = null;	
+
+	/** @var int|null */
 	protected $selectBSite = null;
 
 	/** @var int|null */
@@ -66,10 +69,19 @@ class ShowPage {
 	 */
 	public function SelectId(array $params) {
 		$this->currentPageId = $params['pObj']->id;
+		// Get the rootpage_id from realurl config.
+		$this->rootpage_id = $params['pObj']->TYPO3_CONF_VARS['EXTCONF']['realurl'];
+		$this->rootpage_id = reset($this->rootpage_id);
+		$this->rootpage_id = $this->rootpage_id['pagePath']['rootpage_id'];
 		
-		// If the ID is NULL, then we set this value to 1. NULL is the "Home"page, ID is a specific sub-page, e.g. www.domain.de (NULL) - www.domain.de/page.html (ID)
+		// If the ID is NULL, then we set this value to the rootpage_id. NULL is the "Home"page, ID is a specific sub-page, e.g. www.domain.de (NULL) - www.domain.de/page.html (ID)
 		if(!$this->currentPageId) {
-			$this->currentPageId = 1;
+			if($this->rootpage_id) {
+				$this->currentPageId = $this->rootpage_id;
+			} else {
+				// Leave the function because we can not determine the ID.
+				return;
+			}
 		}
 
 		$pageRepository = GeneralUtility::makeInstance('TYPO3\\CMS\Frontend\\Page\\PageRepository');
