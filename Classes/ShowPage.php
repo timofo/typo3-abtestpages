@@ -48,6 +48,9 @@ class ShowPage {
 	protected $rootpage_id = null;	
 
 	/** @var int|null */
+	protected $realurlConfig = null;
+
+	/** @var int|null */
 	protected $selectBSite = null;
 
 	/** @var int|null */
@@ -69,10 +72,14 @@ class ShowPage {
 	 */
 	public function SelectId(array $params) {
 		$this->currentPageId = $params['pObj']->id;
+		
 		// Get the rootpage_id from realurl config.
-		$this->rootpage_id = $params['pObj']->TYPO3_CONF_VARS['EXTCONF']['realurl'];
-		$this->rootpage_id = reset($this->rootpage_id);
-		$this->rootpage_id = $this->rootpage_id['pagePath']['rootpage_id'];
+		$this->realurlConfig = $params['pObj']->TYPO3_CONF_VARS['EXTCONF']['realurl'];
+		if(array_key_exists($_SERVER['SERVER_NAME'], $this->realurlConfig)) {
+			$this->rootpage_id = $this->realurlConfig[$_SERVER['SERVER_NAME']]['pagePath']['rootpage_id'];
+		} else {
+			$this->rootpage_id = $this->realurlConfig['_DEFAULT']['pagePath']['rootpage_id'];
+		}
 		
 		// If the ID is NULL, then we set this value to the rootpage_id. NULL is the "Home"page, ID is a specific sub-page, e.g. www.domain.de (NULL) - www.domain.de/page.html (ID)
 		if(!$this->currentPageId) {
