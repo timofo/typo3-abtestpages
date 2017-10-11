@@ -71,60 +71,67 @@ class ShowPage {
 	 * @return void
 	 */
 	public function SelectId(array $params) {
-		$this->currentPageId = $params['pObj']->id;
-		
-		// Get the rootpage_id from realurl config.
-		$this->realurlConfig = $params['pObj']->TYPO3_CONF_VARS['EXTCONF']['realurl'];
-		if(array_key_exists($_SERVER['SERVER_NAME'], $this->realurlConfig)) {
-			$this->rootpage_id = $this->realurlConfig[$_SERVER['SERVER_NAME']]['pagePath']['rootpage_id'];
-		} else {
-			$this->rootpage_id = $this->realurlConfig['_DEFAULT']['pagePath']['rootpage_id'];
-		}
-		
-		// If the ID is NULL, then we set this value to the rootpage_id. NULL is the "Home"page, ID is a specific sub-page, e.g. www.domain.de (NULL) - www.domain.de/page.html (ID)
-		if(!$this->currentPageId) {
-			if($this->rootpage_id) {
-				$this->currentPageId = $this->rootpage_id;
+
+		// only try to change the page if it's not the googlebot.  
+		if(!preg_match("/googlebot/i",$_SERVER['HTTP_USER_AGENT'])) {
+
+			$this->currentPageId = $params['pObj']->id;
+			
+			// Get the rootpage_id from realurl config.
+			$this->realurlConfig = $params['pObj']->TYPO3_CONF_VARS['EXTCONF']['realurl'];
+			if(array_key_exists($_SERVER['SERVER_NAME'], $this->realurlConfig)) {
+				$this->rootpage_id = $this->realurlConfig[$_SERVER['SERVER_NAME']]['pagePath']['rootpage_id'];
 			} else {
-				// Leave the function because we can not determine the ID.
-				return;
+				$this->rootpage_id = $this->realurlConfig['_DEFAULT']['pagePath']['rootpage_id'];
 			}
-		}
-
-		$pageRepository = GeneralUtility::makeInstance('TYPO3\\CMS\Frontend\\Page\\PageRepository');
-		$currentPagePropertiesArray = $pageRepository->getPage($this->currentPageId);
-
-		$this->selectBSite = $currentPagePropertiesArray['tx_abtestpages_b_id'];
-		$this->cookieLifeTime = $currentPagePropertiesArray['tx_abtestpages_cookie_time'];
-
-		// If a "B" version is specified we start looking for cookies.
-		// If a cookie for current page exists the ID in the cookie is our preferred page ID.
-		// If a cookie does not exist we select the page version by random. 
-		if($this->selectBSite) {
-			if($_COOKIE["abtestpages-".$this->currentPageId]) {
-				$this->randomAbPageId = $_COOKIE["abtestpages-".$this->currentPageId];
-			} else {
-				$randomPage = rand(0,1); // 0 = original ID; 1 = "B" site.
-				if($randomPage) {
-					$this->randomAbPageId = $this->selectBSite;
+			
+			// If the ID is NULL, then we set this value to the rootpage_id. NULL is the "Home"page, ID is a specific sub-page, e.g. www.domain.de (NULL) - www.domain.de/page.html (ID)
+			if(!$this->currentPageId) {
+				if($this->rootpage_id) {
+					$this->currentPageId = $this->rootpage_id;
 				} else {
-					$this->randomAbPageId = $this->currentPageId;
+					// Leave the function because we can not determine the ID.
+					return;
 				}
-				setcookie("abtestpages-".$this->currentPageId,$this->randomAbPageId,time()+$this->cookieLifeTime);
 			}
 
-			// If current page ID is different from the random page ID we set the correct page ID. 
-			if($this->currentPageId != $this->randomAbPageId) {
-				$params['pObj']->id = $this->randomAbPageId;
+			$pageRepository = GeneralUtility::makeInstance('TYPO3\\CMS\Frontend\\Page\\PageRepository');
+			$currentPagePropertiesArray = $pageRepository->getPage($this->currentPageId);
+
+			$this->selectBSite = $currentPagePropertiesArray['tx_abtestpages_b_id'];
+			$this->cookieLifeTime = $currentPagePropertiesArray['tx_abtestpages_cookie_time'];
+
+			// If a "B" version is specified we start looking for cookies.
+			// If a cookie for current page exists the ID in the cookie is our preferred page ID.
+			// If a cookie does not exist we select the page version by random. 
+			if($this->selectBSite) {
+				if($_COOKIE["abtestpages-".$this->currentPageId]) {
+					$this->randomAbPageId = $_COOKIE["abtestpages-".$this->currentPageId];
+				} else {
+					$randomPage = rand(0,1); // 0 = original ID; 1 = "B" site.
+					if($randomPage) {
+						$this->randomAbPageId = $this->selectBSite;
+					} else {
+						$this->randomAbPageId = $this->currentPageId;
+					}
+					setcookie("abtestpages-".$this->currentPageId,$this->randomAbPageId,time()+$this->cookieLifeTime);
+				}
+
+				// If current page ID is different from the random page ID we set the correct page ID. 
+				if($this->currentPageId != $this->randomAbPageId) {
+					$params['pObj']->id = $this->randomAbPageId;
+				} 
+			}
+
+			// If additional headerdata is present then we specify additionalHeaderData. 
+			$randomPagePropertiesArray = $pageRepository->getPage($this->randomAbPageId);
+			$this->additionalHeaderData = $randomPagePropertiesArray['tx_abtestpages_header'];
+			if($this->additionalHeaderData) {
+				$GLOBALS['TSFE']->additionalHeaderData['abtestpages'] = $this->additionalHeaderData;
 			} 
+
 		}
 
-		// If additional headerdata is present then we specify additionalHeaderData. 
-		$randomPagePropertiesArray = $pageRepository->getPage($this->randomAbPageId);
-		$this->additionalHeaderData = $randomPagePropertiesArray['tx_abtestpages_header'];
-		if($this->additionalHeaderData) {
-			$GLOBALS['TSFE']->additionalHeaderData['abtestpages'] = $this->additionalHeaderData;
-		} 
 	}
 }
 
