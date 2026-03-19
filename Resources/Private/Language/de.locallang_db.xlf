@@ -5,7 +5,7 @@
 		<body>
 		<trans-unit id="pages.tx_abtestpages_b_id">
 			<source>SiteXXX B</source>
-			<target>SiteXXX B</target>
+			<target>SeiteXXX B</target>
 		</trans-unit>
 		<trans-unit id="pages.tx_abtestpages_cookie_time">
 			<source>Cookie Lifetime</source>
