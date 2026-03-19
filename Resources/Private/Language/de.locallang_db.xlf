@@ -4,8 +4,8 @@
 		<header/>
 		<body>
 		<trans-unit id="pages.tx_abtestpages_b_id">
-			<source>Site B</source>
-			<target>Seite B</target>
+			<source>SiteXXX B</source>
+			<target>SeiteXXX B</target>
 		</trans-unit>
 		<trans-unit id="pages.tx_abtestpages_cookie_time">
 			<source>Cookie Lifetime</source>
